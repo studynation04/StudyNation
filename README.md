@@ -244,7 +244,25 @@ The application uses custom CSS with a modern design featuring:
 
 ## Deployment
 
-### Render (recommended)
+### Hostinger VPS (current production target)
+
+Django cannot run on Hostinger Web/Cloud shared hosting. Use a **VPS**.
+
+Full guide: **[HOSTINGER_DEPLOY.md](HOSTINGER_DEPLOY.md)**
+
+On the VPS (as root):
+
+```bash
+export DOMAIN=yourdomain.com
+export VPS_IP=YOUR_VPS_IP
+export REPO_URL=https://github.com/studynation04/StudyNation.git
+git clone "$REPO_URL" /var/www/studynation
+bash /var/www/studynation/deploy/hostinger/setup.sh
+```
+
+Then create an admin user and issue SSL with certbot (steps in the guide).
+
+### Render
 
 Full guide: **[RENDER_DEPLOY.md](RENDER_DEPLOY.md)**
 

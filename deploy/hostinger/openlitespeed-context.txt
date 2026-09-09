@@ -1,0 +1,35 @@
+OpenLiteSpeed virtual host context for StudyNation
+==================================================
+
+In hPanel VPS → OpenLiteSpeed WebAdmin (https://YOUR_VPS_IP:7080)
+→ Virtual Hosts → Example (or your vhost) → Context → Add / Edit `/`
+
+Type             = App Server
+URI              = /
+Location         = /var/www/studynation/
+Binary Path      = /usr/local/lsws/fcgi-bin/lswsgi
+Application Type = WSGI
+Startup File     = config/wsgi.py
+Environment      = PYTHONPATH=/var/www/studynation:/var/www/studynation/venv/lib/python3.12/site-packages
+Environment      = LS_PYTHONBIN=/var/www/studynation/venv/bin/python
+Environment      = DJANGO_SETTINGS_MODULE=config.settings
+
+Optional static/media contexts (faster than Django serving them):
+
+URI              = /static/
+Type             = Static
+Location         = /var/www/studynation/staticfiles/
+Accessible       = Yes
+
+URI              = /media/
+Type             = Static
+Location         = /var/www/studynation/media/
+Accessible       = Yes
+
+After code or .env changes, restart Python workers:
+  killall lswsgi
+  systemctl restart lsws
+
+Permissions (OpenLiteSpeed runs as nobody):
+  chown -R nobody:nogroup /var/www/studynation
+  chmod -R u+rwX,g+rX /var/www/studynation/media /var/www/studynation/staticfiles

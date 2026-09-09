@@ -1,5 +1,7 @@
 # Study Nation - Deployment Guide
 
+**Hostinger:** Django needs a **VPS**. Follow **[HOSTINGER_DEPLOY.md](HOSTINGER_DEPLOY.md)**.
+
 This guide provides instructions for deploying the Study Nation application to various platforms.
 
 ## Table of Contents

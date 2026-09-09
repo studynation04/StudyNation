@@ -22,11 +22,11 @@ staticfiles/
 # Keep media out of git by default (large uploads). Commit selectively if needed.
 # media/
 
-# Environment / secrets
-# .env
-# .env.local
-# .env.*.local
-# *.pem
+# Environment / secrets (never commit production .env)
+.env
+.env.local
+.env.*.local
+*.pem
 
 # IDE / OS
 .idea/

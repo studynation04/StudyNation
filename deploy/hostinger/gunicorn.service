@@ -1,0 +1,22 @@
+[Unit]
+Description=StudyNation Gunicorn
+After=network.target mysql.service postgresql.service
+Wants=network-online.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/studynation
+EnvironmentFile=/var/www/studynation/.env
+Environment=PATH=/var/www/studynation/venv/bin
+ExecStart=/var/www/studynation/venv/bin/gunicorn \
+    --config /var/www/studynation/gunicorn.conf.py \
+    --bind unix:/run/studynation.sock
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
