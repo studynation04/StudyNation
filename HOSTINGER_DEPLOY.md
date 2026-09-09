@@ -1,6 +1,6 @@
 # Deploy StudyNation on Hostinger
 
-Django is **not supported on Hostinger Web or Cloud (shared) hosting**. Use a **Hostinger VPS** (KVM 1 or larger) with Ubuntu **24.04** and **Python 3.12+** (required by Django 6).
+Django is **not supported on Hostinger Web or Cloud (shared) hosting**. Use a **Hostinger VPS** (KVM 1 or larger) with Ubuntu **24.04 or 26.04** and **Python 3.12+** (required by Django 6). A plain Ubuntu VPS uses Path B (Nginx + Gunicorn).
 
 Repo: `https://github.com/studynation04/StudyNation.git`
 

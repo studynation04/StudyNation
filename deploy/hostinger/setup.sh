@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Hostinger VPS bootstrap for StudyNation (Ubuntu 24.04, Python 3.12+).
+# Hostinger VPS bootstrap for StudyNation (Ubuntu 24.04/26.04, Python 3.12+).
 #
 # Run as root on the VPS:
 #   export DOMAIN=yourdomain.com

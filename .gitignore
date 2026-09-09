@@ -48,3 +48,7 @@ htmlcov/
 
 # Local docs artifacts
 docs/manual_screenshots/
+
+# Private Hostinger deploy notes (server IP / hostname — do not push)
+Hostinger_VPS_Deploy_Steps.docx
+_make_hostinger_doc.js
