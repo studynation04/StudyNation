@@ -1,5 +1,5 @@
-# Option/answer fields as TEXT so MySQL/MariaDB utf8mb4 stays under the
-# 65535-byte InnoDB row limit (VARCHAR(5000) x 5 overflows).
+# Convert option/answer columns to TEXT on databases that already applied
+# the old VARCHAR(5000) version of 0016 (local SQLite).
 
 from django.db import migrations, models
 
@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("courses", "0015_discussion_reply_updated_at"),
+        ("courses", "0025_exam_allow_calculator"),
     ]
 
     operations = [

@@ -214,15 +214,16 @@ class Question(models.Model):
     )
     order = models.IntegerField(default=0)
 
-    # Single/Multiple choice options
-    option_a = models.CharField(max_length=5000, blank=True)
-    option_b = models.CharField(max_length=5000, blank=True)
-    option_c = models.CharField(max_length=5000, blank=True)
-    option_d = models.CharField(max_length=5000, blank=True)
+    # Single/Multiple choice options (TextField: MySQL utf8mb4 cannot store
+    # several VARCHAR(5000) columns in one InnoDB row — max 65535 bytes).
+    option_a = models.TextField(blank=True)
+    option_b = models.TextField(blank=True)
+    option_c = models.TextField(blank=True)
+    option_d = models.TextField(blank=True)
 
     # Correct answer(s)
-    correct_answer = models.CharField(
-        max_length=5000, blank=True, help_text="For choice: A/B/C/D or A,B for multiple"
+    correct_answer = models.TextField(
+        blank=True, help_text="For choice: A/B/C/D or A,B for multiple"
     )
     marks = models.IntegerField(default=1)
     explanation = models.TextField(
