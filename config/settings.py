@@ -18,13 +18,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load .env for local development and Hostinger VPS (no-op if file is absent)
 load_dotenv(BASE_DIR / ".env")
 
-# Hostinger / generic MySQL (MariaDB) without compiling mysqlclient.
+# Prefer mysqlclient. Fall back to PyMySQL on Hostinger if the C extension
+# is missing. Django 6 requires MySQLdb.version_info >= (2, 2, 1).
 try:
-    import pymysql
-
-    pymysql.install_as_MySQLdb()
+    import MySQLdb  # noqa: F401
 except ImportError:
-    pass
+    try:
+        import pymysql
+
+        pymysql.version_info = (2, 2, 1, "final", 0)
+        pymysql.install_as_MySQLdb()
+    except ImportError:
+        pass
 
 
 def _csv_env(name, default=""):

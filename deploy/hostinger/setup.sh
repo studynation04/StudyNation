@@ -39,6 +39,7 @@ apt-get install -y --no-install-recommends \
   git nginx curl ca-certificates \
   libxml2-dev libxslt1-dev \
   libjpeg-dev zlib1g-dev libpng-dev libpq-dev \
+  default-libmysqlclient-dev libmariadb-dev \
   libreoffice-writer-nogui fonts-dejavu-core fonts-liberation
 
 if [ "$DB_ENGINE" = "postgres" ]; then
@@ -63,6 +64,17 @@ if [ ! -d venv ]; then
 fi
 # shellcheck disable=SC1091
 source venv/bin/activate
+if pkg-config --exists mariadb; then
+  export MYSQLCLIENT_CFLAGS
+  MYSQLCLIENT_CFLAGS="$(pkg-config --cflags mariadb)"
+  export MYSQLCLIENT_LDFLAGS
+  MYSQLCLIENT_LDFLAGS="$(pkg-config --libs mariadb)"
+elif pkg-config --exists mysqlclient; then
+  export MYSQLCLIENT_CFLAGS
+  MYSQLCLIENT_CFLAGS="$(pkg-config --cflags mysqlclient)"
+  export MYSQLCLIENT_LDFLAGS
+  MYSQLCLIENT_LDFLAGS="$(pkg-config --libs mysqlclient)"
+fi
 pip install --upgrade pip
 pip install -r requirements.txt
 
