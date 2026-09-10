@@ -141,7 +141,6 @@ python manage.py migrate --noinput
 python manage.py collectstatic --noinput
 python manage.py ensure_schema || true
 
-install -d -o www-data -g www-data /run
 chown -R www-data:www-data "$APP_DIR"
 chmod -R u+rwX,g+rX "$APP_DIR"
 chmod 600 "$APP_DIR/.env"
