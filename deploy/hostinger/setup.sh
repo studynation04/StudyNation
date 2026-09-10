@@ -39,13 +39,12 @@ apt-get install -y --no-install-recommends \
   git nginx curl ca-certificates \
   libxml2-dev libxslt1-dev \
   libjpeg-dev zlib1g-dev libpng-dev libpq-dev \
-  default-libmysqlclient-dev libmariadb-dev \
   libreoffice-writer-nogui fonts-dejavu-core fonts-liberation
 
 if [ "$DB_ENGINE" = "postgres" ]; then
   apt-get install -y --no-install-recommends postgresql postgresql-contrib
 else
-  apt-get install -y --no-install-recommends mariadb-server
+  apt-get install -y --no-install-recommends mariadb-server libmariadb-dev
 fi
 
 mkdir -p "$APP_DIR"
