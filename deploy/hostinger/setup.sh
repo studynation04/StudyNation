@@ -35,8 +35,10 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
 apt-get install -y --no-install-recommends \
   python3 python3-venv python3-pip python3-dev \
+  build-essential pkg-config \
   git nginx curl ca-certificates \
-  libjpeg-dev zlib1g-dev libpng-dev \
+  libxml2-dev libxslt1-dev \
+  libjpeg-dev zlib1g-dev libpng-dev libpq-dev \
   libreoffice-writer-nogui fonts-dejavu-core fonts-liberation
 
 if [ "$DB_ENGINE" = "postgres" ]; then
