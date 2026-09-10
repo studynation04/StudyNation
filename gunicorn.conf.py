@@ -22,3 +22,4 @@ accesslog = "-"
 errorlog = "-"
 capture_output = True
 preload_app = False
+worker_tmp_dir = os.environ.get("GUNICORN_WORKER_TMPDIR", "/tmp")

@@ -9,6 +9,7 @@ Group=www-data
 WorkingDirectory=/var/www/studynation
 EnvironmentFile=/var/www/studynation/.env
 Environment=PATH=/var/www/studynation/venv/bin
+Environment=HOME=/var/www/studynation
 RuntimeDirectory=studynation
 RuntimeDirectoryMode=0755
 ExecStart=/var/www/studynation/venv/bin/gunicorn \

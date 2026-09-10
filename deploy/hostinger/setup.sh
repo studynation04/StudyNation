@@ -48,6 +48,7 @@ else
 fi
 
 mkdir -p "$APP_DIR"
+git config --global --add safe.directory "$APP_DIR" 2>/dev/null || true
 if [ ! -d "$APP_DIR/.git" ]; then
   git clone --branch "$BRANCH" "$REPO_URL" "$APP_DIR"
 else
