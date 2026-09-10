@@ -333,7 +333,7 @@ USE_X_FORWARDED_PORT = True
 
 if not DEBUG:
     # Default SSL redirect ON once HTTPS is live. Set SECURE_SSL_REDIRECT=False
-    # for the first Hostinger deploy before Let's Encrypt is issued.
+    # for the first Hostinger deploy (IP / HTTP only, no Let's Encrypt yet).
     SECURE_SSL_REDIRECT = os.environ.get("SECURE_SSL_REDIRECT", "True").lower() in (
         "1",
         "true",
@@ -341,17 +341,27 @@ if not DEBUG:
         "on",
     )
     SECURE_REDIRECT_EXEMPT = [r"^healthz/?$"]
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
+    # Secure cookies only work on HTTPS. On http://VPS_IP they block login (CSRF 403).
+    _secure_cookie_default = "True" if SECURE_SSL_REDIRECT else "False"
+    SESSION_COOKIE_SECURE = os.environ.get(
+        "SESSION_COOKIE_SECURE", _secure_cookie_default
+    ).lower() in ("1", "true", "yes", "on")
+    CSRF_COOKIE_SECURE = os.environ.get(
+        "CSRF_COOKIE_SECURE", _secure_cookie_default
+    ).lower() in ("1", "true", "yes", "on")
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     # SAMEORIGIN (not DENY): past papers / resource viewers embed PDFs from
     # the same host; DENY can cause blank viewers and odd client errors.
     X_FRAME_OPTIONS = os.environ.get("X_FRAME_OPTIONS", "SAMEORIGIN")
-    # HSTS: enable after you confirm HTTPS works end-to-end
-    SECURE_HSTS_SECONDS = int(os.environ.get("SECURE_HSTS_SECONDS", "31536000"))
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
+    if SECURE_SSL_REDIRECT:
+        SECURE_HSTS_SECONDS = int(os.environ.get("SECURE_HSTS_SECONDS", "31536000"))
+        SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+        SECURE_HSTS_PRELOAD = True
+    else:
+        SECURE_HSTS_SECONDS = 0
+        SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+        SECURE_HSTS_PRELOAD = False
 
 # Logging — console logging for Hostinger journalctl / Render log stream
 LOGGING = {
