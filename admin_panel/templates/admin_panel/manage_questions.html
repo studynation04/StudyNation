@@ -389,6 +389,13 @@
 
       <div class="field">
         <div class="field-label">
+          <span>Hint / clue <em style="font-weight:500;color:#888;">(optional)</em></span>
+        </div>
+        <textarea id="editHint" rows="2" placeholder="Shown when the student taps Hint during practice"></textarea>
+      </div>
+
+      <div class="field">
+        <div class="field-label">
           <span>Video solution link <em style="font-weight:500;color:#888;">(optional)</em></span>
         </div>
         <input type="url" id="editVideoSolution" placeholder="https://youtube.com/... or any video URL" />
@@ -480,6 +487,7 @@
     document.getElementById('editTitle').textContent = 'Edit Q#' + q.id + ' — ' + (q.question_type_label || q.question_type);
     document.getElementById('editQuestionText').value = stripHtml(q.question_text || '');
     document.getElementById('editSolution').value = q.explanation || '';
+    document.getElementById('editHint').value = q.hint || '';
     document.getElementById('editVideoSolution').value = q.video_solution_url || '';
     document.getElementById('editPassage').value = q.passage || '';
     document.getElementById('editDifficulty').value = q.difficulty_level || '';
@@ -604,6 +612,7 @@
     const payload = {
       question_text: document.getElementById('editQuestionText').value,
       explanation: document.getElementById('editSolution').value,
+      hint: document.getElementById('editHint').value,
       video_solution_url: document.getElementById('editVideoSolution').value.trim(),
       passage: document.getElementById('editPassage').value,
       difficulty_level: document.getElementById('editDifficulty').value,

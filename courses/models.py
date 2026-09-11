@@ -229,6 +229,11 @@ class Question(models.Model):
     explanation = models.TextField(
         blank=True, help_text="Shown to students as the question 'Solution'."
     )
+    hint = models.TextField(
+        blank=True,
+        default="",
+        help_text="Optional clue shown when a student taps Hint during practice.",
+    )
     video_solution_url = models.URLField(
         max_length=500,
         blank=True,

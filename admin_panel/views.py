@@ -340,6 +340,7 @@ def _serialize_import_question(q: dict) -> dict:
         "correct_answer": str(q.get("correct_answer") or ""),
         "marks": marks,
         "explanation": str(q.get("explanation") or ""),
+        "hint": str(q.get("hint") or ""),
         "video_solution_url": str(q.get("video_solution_url") or "")[:500],
         "topic": str(q.get("topic") or ""),
         "paper_code": str(q.get("paper_code") or ""),
@@ -471,6 +472,7 @@ def _import_questions_to_bank(question_bank, questions, admin_user, file_name, f
                     passage=(q_data.get("passage") or "") or "",
                     marks=marks,
                     explanation=q_data.get("explanation", "") or "",
+                    hint=q_data.get("hint", "") or "",
                     video_solution_url=(
                         (q_data.get("video_solution_url") or "").strip()[:500]
                     ),
@@ -599,6 +601,7 @@ def _normalize_import_question(raw: dict, index: int) -> dict | None:
         "correct_answer": str(raw.get("correct_answer") or "").strip(),
         "marks": marks,
         "explanation": str(raw.get("explanation") or ""),
+        "hint": str(raw.get("hint") or ""),
         "video_solution_url": str(raw.get("video_solution_url") or "")[:500],
         "topic": str(raw.get("topic") or ""),
         "paper_code": str(raw.get("paper_code") or ""),
@@ -863,6 +866,7 @@ def csv_upload_preview(request):
                                 correct_answer=q_data.get("correct_answer", "") or "",
                                 marks=marks,
                                 explanation=q_data.get("explanation", "") or "",
+                                hint=q_data.get("hint", "") or "",
                                 video_solution_url=(
                                     (q_data.get("video_solution_url") or "").strip()[
                                         :500
@@ -1205,6 +1209,7 @@ def _serialize_question(question):
         "negative_marks": str(question.negative_marks),
         "partial_marking": question.partial_marking,
         "explanation": question.explanation,
+        "hint": question.hint or "",
         "video_solution_url": question.video_solution_url or "",
         "passage": question.passage,
         "correct_answer": question.correct_answer,
@@ -1316,6 +1321,7 @@ def question_wizard_save(request, question_id):
     )
     question.difficulty_level = payload.get("difficulty_level") or ""
     question.explanation = payload.get("explanation", "")
+    question.hint = payload.get("hint", "") or ""
     # Optional video solution link (admin-only path)
     video_url = (payload.get("video_solution_url") or "").strip()
     if video_url and not (

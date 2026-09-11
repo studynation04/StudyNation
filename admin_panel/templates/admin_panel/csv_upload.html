@@ -451,6 +451,9 @@
                 <strong>explanation</strong> - Optional explanation
               </li>
               <li>
+                <strong>hint</strong> - Optional clue shown to students when they tap Hint during practice
+              </li>
+              <li>
                 <strong>topic, paper_code, year, season, zone, question_number</strong> - Optional for saving the question, but <strong>paper_code is required for it to show up in the Exam Builder / Build Question List tools</strong> on the admin and student panels (e.g. topic="Functions", paper_code="0606/23", year=2019, season=winter). Rows left blank are still saved and visible in Manage Questions.
               </li>
             </ul>
@@ -472,6 +475,10 @@
                 An <strong>"Answer Sheet"</strong> table/section at the end: a row of question
                 numbers followed by a row of answer letters, repeated in blocks (e.g. 1–10, then
                 their answers b, c, c, d...).
+              </li>
+              <li>
+                Optional per-question clue: a line like <strong>Hint: use Rolle's theorem</strong>
+                (or <strong>Clue:</strong>) under that question. Students can open it with the Hint button.
               </li>
               <li>
                 Since this file doesn't have topic/paper_code/year/season/zone columns, fill in

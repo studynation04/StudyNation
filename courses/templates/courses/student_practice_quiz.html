@@ -181,6 +181,31 @@
       color: #fff; border-color: transparent;
       box-shadow: 0 8px 22px rgba(79, 70, 229, 0.35);
     }
+    .pq-tool-btns {
+      display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .pq-hint-panel {
+      position: fixed; right: 20px; top: 118px; width: 380px; max-width: calc(100vw - 32px);
+      z-index: 1190; display: none;
+      background: #fff; color: var(--pq-ink);
+      border: 1px solid #c7d2fe; border-radius: 16px;
+      box-shadow: 0 18px 48px rgba(79, 70, 229, 0.18);
+      overflow: hidden;
+    }
+    .pq-hint-panel.is-open { display: block; animation: pq-float-in 0.22s ease-out; }
+    .pq-hint-panel-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 11px 14px;
+      background: linear-gradient(135deg, #4f46e5 0%, #0f766e 100%);
+      color: #fff;
+    }
+    .pq-hint-panel-head strong { font-size: 0.88rem; font-weight: 700; }
+    .pq-hint-body {
+      padding: 14px 16px 16px; font-size: 0.94rem; line-height: 1.6;
+      max-height: min(48vh, 360px); overflow: auto;
+    }
+    .pq-hint-body.is-empty { color: var(--pq-muted); font-style: italic; }
+    .pq-question-hint { display: none; }
 
     /* Progress — animated gradient */
     .pq-progress-track {
@@ -691,6 +716,8 @@
       .pq-meta-pills { width: 100%; justify-content: flex-end; }
       .pq-options { grid-template-columns: 1fr; }
       .pq-calc { right: 10px; left: 10px; bottom: 10px; width: auto; max-width: 360px; margin: 0 auto; }
+      .pq-hint-panel { right: 10px; left: 10px; top: auto; bottom: 90px; width: auto; max-width: 420px; margin: 0 auto; }
+      .pq-hint-panel-head .pq-calc-icon-btn { background: rgba(255,255,255,0.18); color: #fff; border: 0; width: 28px; height: 28px; border-radius: 8px; cursor: pointer; }
     }
   </style>
 {% endblock %}
@@ -723,11 +750,16 @@
       </div>
     </div>
     <div class="pq-topbar-right">
-      {% if exam.allow_calculator %}
-      <button type="button" class="pq-calc-toggle" id="pqCalcToggle" onclick="togglePracticeCalculator()">
-        <span aria-hidden="true">⌨</span> Calculator
-      </button>
-      {% endif %}
+      <div class="pq-tool-btns">
+        <button type="button" class="pq-calc-toggle" id="pqHintToggle" onclick="togglePracticeHint()">
+          <span aria-hidden="true">💡</span> Hint
+        </button>
+        {% if exam.allow_calculator %}
+        <button type="button" class="pq-calc-toggle" id="pqCalcToggle" onclick="togglePracticeCalculator()">
+          <span aria-hidden="true">⌨</span> Calculator
+        </button>
+        {% endif %}
+      </div>
       <div class="pq-meta-pills">
         <div class="pq-meta-pill">
           <label>Answered</label>
@@ -742,6 +774,14 @@
   </div>
   <div class="pq-progress-track" aria-hidden="true">
     <div class="pq-progress-fill" id="pqProgressFill"></div>
+  </div>
+
+  <div class="pq-hint-panel" id="pqHintPanel" aria-label="Question hint" role="dialog">
+    <div class="pq-hint-panel-head">
+      <strong>Hint</strong>
+      <button type="button" class="pq-calc-icon-btn" onclick="togglePracticeHint(false)" title="Close">✕</button>
+    </div>
+    <div class="pq-hint-body" id="pqHintBody"></div>
   </div>
 
   {% if exam.allow_calculator %}
@@ -824,6 +864,7 @@
             {% for eq in exam_questions %}
               {% with q=eq.question %}
                 <div class="pq-question" data-index="{{ forloop.counter0 }}" data-marks="{{ q.marks|default:1 }}" style="{% if not forloop.first %}display:none;{% endif %}">
+                  <div class="pq-question-hint">{% if q.hint %}{{ q.hint|safe_html_stem }}{% endif %}</div>
                   {% if q.topic %}<div class="pq-topic">Topic · {{ q.topic }}</div>{% endif %}
                   <div class="pq-question-text">{{ q.question_text|safe_html_stem }}</div>
                   {% if q.equation_image_list and '<img' not in q.question_text %}
@@ -971,6 +1012,53 @@
   let currentIndex = 0;
   const answeredIds = new Set();
   const reviewIds = new Set(); // question indices marked for review
+  const HINT_EMPTY = 'There are no clues provided for this question.';
+
+  function currentQuestionHintHtml() {
+    var q = document.querySelector('.pq-question[data-index="' + currentIndex + '"]');
+    if (!q) return '';
+    var src = q.querySelector('.pq-question-hint');
+    return src ? (src.innerHTML || '').trim() : '';
+  }
+
+  function currentQuestionHintText() {
+    var q = document.querySelector('.pq-question[data-index="' + currentIndex + '"]');
+    if (!q) return '';
+    var src = q.querySelector('.pq-question-hint');
+    return src ? (src.textContent || '').trim() : '';
+  }
+
+  function renderPracticeHint() {
+    var body = document.getElementById('pqHintBody');
+    if (!body) return;
+    var html = currentQuestionHintHtml();
+    var text = currentQuestionHintText();
+    if (text) {
+      body.classList.remove('is-empty');
+      body.innerHTML = html;
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise([body]);
+      }
+    } else {
+      body.classList.add('is-empty');
+      body.textContent = HINT_EMPTY;
+    }
+  }
+
+  window.refreshPracticeHint = function () {
+    var panel = document.getElementById('pqHintPanel');
+    if (panel && panel.classList.contains('is-open')) renderPracticeHint();
+  };
+
+  window.togglePracticeHint = function (force) {
+    var panel = document.getElementById('pqHintPanel');
+    var btn = document.getElementById('pqHintToggle');
+    if (!panel) return;
+    var open = typeof force === 'boolean' ? force : !panel.classList.contains('is-open');
+    panel.classList.toggle('is-open', open);
+    if (btn) btn.classList.toggle('is-open', open);
+    if (open) renderPracticeHint();
+  };
 
   function letterFromIndex(i) {
     return String.fromCharCode(65 + (parseInt(i, 10) || 0));
@@ -1122,6 +1210,7 @@
     document.getElementById('pqPrevBtn').disabled = (index === 0);
     document.getElementById('pqNextBtn').disabled = (index === TOTAL_QUESTIONS - 1);
     updateMeta(index);
+    if (typeof window.refreshPracticeHint === 'function') window.refreshPracticeHint();
     if (window.MathJax && window.MathJax.typesetPromise) {
       window.MathJax.typesetPromise([document.getElementById('pqQuestionBlock')]);
     }
@@ -1153,6 +1242,14 @@
   document.addEventListener('keydown', function (e) {
     var tag = (e.target && e.target.tagName) || '';
     if (tag === 'TEXTAREA' || tag === 'INPUT') return;
+    if (e.key === 'Escape') {
+      var hintPanel = document.getElementById('pqHintPanel');
+      if (hintPanel && hintPanel.classList.contains('is-open')) {
+        e.preventDefault();
+        togglePracticeHint(false);
+        return;
+      }
+    }
     var calc = document.getElementById('pqCalculator');
     if (calc && calc.classList.contains('is-open')) return;
 

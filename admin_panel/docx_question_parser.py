@@ -185,6 +185,14 @@ CORRECT_ANSWER_TAIL_RE = re.compile(
     r"(?:^|[\n\r]|[\s\u00a0])(?:correct\s*answers?|answer\s*key)\s*[:\-–—]\s*(.+?)\s*$",
     re.IGNORECASE,
 )
+HINT_LINE_RE = re.compile(
+    r"^\s*(?:hint|clue|clues)\s*[:\-–—]\s*(.+?)\s*$",
+    re.IGNORECASE,
+)
+HINT_TAIL_RE = re.compile(
+    r"(?:^|[\n\r])\s*(?:hint|clue|clues)\s*[:\-–—]\s*(.+?)\s*$",
+    re.IGNORECASE | re.DOTALL,
+)
 MULTI_SELECT_HINT_RE = re.compile(
     r"(?:"
     r"indicate\s+all|select\s+all|choose\s+all|all\s+that\s+apply|"
@@ -381,6 +389,19 @@ def _strip_correct_answer(text: str) -> tuple[str, str]:
     return remaining, ans
 
 
+def _strip_hint(text: str) -> tuple[str, str]:
+    """Pull a trailing 'Hint : …' / 'Clue : …' line off the block."""
+    if not text:
+        return "", ""
+    m = HINT_TAIL_RE.search(text)
+    if not m:
+        line = HINT_LINE_RE.match(text.replace("\u00a0", " ").strip())
+        if line:
+            return "", (line.group(1) or "").strip()
+        return text, ""
+    return text[: m.start()].rstrip(), (m.group(1) or "").strip()
+
+
 def _parse_option_line(line: str) -> tuple[str, str] | None:
     """
     If `line` is a single option, return (letter, text), else None.
@@ -391,7 +412,7 @@ def _parse_option_line(line: str) -> tuple[str, str] | None:
     raw = (line or "").replace("\u00a0", " ").strip()
     if not raw:
         return None
-    if CORRECT_ANSWER_LINE_RE.match(raw):
+    if CORRECT_ANSWER_LINE_RE.match(raw) or HINT_LINE_RE.match(raw):
         return None
     m = OPTION_LINE_FULL_RE.match(raw)
     if m:
@@ -2020,6 +2041,7 @@ def parse_docx_questions(uploaded_file, media_subdir="question_equations"):
                 "image_rids": [],
                 "question_number": num_hint or str(len(questions) + 1),
                 "inline_answer": "",
+                "inline_hint": "",
                 "section_hint": section_hint,
                 "passage": passage,
             }
@@ -2035,6 +2057,12 @@ def parse_docx_questions(uploaded_file, media_subdir="question_equations"):
                 or current.get("match_right")
                 or _looks_like_matching_row(block_text)
             )
+            block_text, hint_text = _strip_hint(block_text)
+            if hint_text:
+                prev_hint = (current.get("inline_hint") or "").strip()
+                current["inline_hint"] = (
+                    f"{prev_hint} {hint_text}".strip() if prev_hint else hint_text
+                )
             if matching_ctx:
                 ca_text, ca_ans = _strip_correct_answer(block_text)
                 if ca_ans and not current.get("inline_answer"):
@@ -2185,6 +2213,13 @@ def parse_docx_questions(uploaded_file, media_subdir="question_equations"):
             if q.get("match_left") or q.get("match_right"):
                 continue
             leftover = q.get("question_text") or ""
+            leftover, hint_text = _strip_hint(leftover)
+            if hint_text:
+                prev_hint = (q.get("inline_hint") or "").strip()
+                q["inline_hint"] = (
+                    f"{prev_hint} {hint_text}".strip() if prev_hint else hint_text
+                )
+                q["question_text"] = leftover
             stem, opts, ans = _split_stem_options_answer(leftover)
             if ans and not q.get("inline_answer"):
                 q["inline_answer"] = ans
@@ -2381,6 +2416,7 @@ def parse_docx_questions(uploaded_file, media_subdir="question_equations"):
                 "correct_answer": _format_correct_answer(answer_raw, question_type),
                 "marks": 1,
                 "explanation": expl,
+                "hint": q.get("inline_hint") or "",
                 "topic": "",
                 "paper_code": "",
                 "year": None,

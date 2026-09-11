@@ -607,6 +607,14 @@
           </div>
 
           <div class="form-row">
+            <div class="q-field-label">
+              Hint / clue
+              <em style="font-weight:500;color:#888;">(optional — shown when the student taps Hint)</em>
+            </div>
+            <textarea id="hintField" rows="2" style="width:100%;" placeholder="Short clue for this question only"></textarea>
+          </div>
+
+          <div class="form-row">
             <div class="q-field-label">Video solution link <em style="font-weight:500;color:#888;">(optional)</em></div>
             <input type="url" id="videoSolutionField" style="width:100%;" placeholder="https://youtube.com/... or any video URL" />
             <small style="color:#888;display:block;margin-top:4px;">Optional. Shown as a “Video Solution” button to students.</small>
@@ -885,6 +893,7 @@
         document.getElementById('questionField').innerHTML = q.question_text || '';
         document.getElementById('difficultyField').value = q.difficulty_level || '';
         document.getElementById('solutionField').value = q.explanation || '';
+        document.getElementById('hintField').value = q.hint || '';
         document.getElementById('videoSolutionField').value = q.video_solution_url || '';
         document.getElementById('passageField').value = q.passage || '';
         document.getElementById('passageWrap').style.display = type === 'comprehension' ? 'block' : 'none';
@@ -1050,6 +1059,7 @@
           question_text: document.getElementById('questionField').innerHTML.trim(),
           difficulty_level: document.getElementById('difficultyField').value,
           explanation: document.getElementById('solutionField').value,
+          hint: document.getElementById('hintField').value,
           video_solution_url: (document.getElementById('videoSolutionField').value || '').trim(),
           passage: type === 'comprehension' ? document.getElementById('passageField').value : '',
           answer_type: document.getElementById('answerTypeField').value,

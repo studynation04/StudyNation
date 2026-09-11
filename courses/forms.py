@@ -90,6 +90,7 @@ class CSVUploadForm(forms.Form):
                     "correct_answer": row.get("correct_answer", "").strip(),
                     "marks": int(row.get("marks", 1) or 1),
                     "explanation": row.get("explanation", "").strip(),
+                    "hint": row.get("hint", "").strip(),
                 }
                 questions.append(question)
         except Exception as e:
@@ -127,6 +128,7 @@ class ManualQuestionForm(forms.ModelForm):
             "correct_answer",
             "marks",
             "explanation",
+            "hint",
             "video_solution_url",
         ]
         widgets = {
@@ -163,6 +165,13 @@ class ManualQuestionForm(forms.ModelForm):
                     "class": "form-control",
                     "rows": 3,
                     "placeholder": "Explanation for the answer (optional)",
+                }
+            ),
+            "hint": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": 2,
+                    "placeholder": "Optional hint / clue shown during practice",
                 }
             ),
             "video_solution_url": forms.URLInput(

@@ -416,6 +416,10 @@
                     <textarea data-field="explanation" rows="2">{{ q.explanation }}</textarea>
                   </div>
                   <div class="full">
+                    <label>Hint / clue (shown during practice)</label>
+                    <textarea data-field="hint" rows="2">{{ q.hint }}</textarea>
+                  </div>
+                  <div class="full">
                     <label>Video solution URL</label>
                     <input type="text" data-field="video_solution_url" value="{{ q.video_solution_url }}" />
                   </div>
@@ -525,6 +529,7 @@
               season: fieldVal(card, 'season'),
               zone: fieldVal(card, 'zone'),
               explanation: fieldVal(card, 'explanation'),
+              hint: fieldVal(card, 'hint'),
               video_solution_url: fieldVal(card, 'video_solution_url'),
               equation_images: eqImages
             });

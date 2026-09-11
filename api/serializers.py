@@ -62,6 +62,7 @@ class QuestionStaffSerializer(serializers.ModelSerializer):
             "correct_answer",
             "marks",
             "explanation",
+            "hint",
             "order",
         ]
 

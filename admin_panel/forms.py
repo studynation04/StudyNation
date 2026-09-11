@@ -459,6 +459,7 @@ class CSVUploadForm(forms.Form):
         "correct_answer",
         "marks",
         "explanation",
+        "hint",
         "topic",
         "paper_code",
         "year",
@@ -642,6 +643,7 @@ class CSVUploadForm(forms.Form):
             "correct_answer": s("correct_answer"),
             "marks": marks,
             "explanation": s("explanation"),
+            "hint": s("hint"),
             "video_solution_url": s("video_solution_url"),
             "topic": s("topic"),
             "paper_code": s("paper_code"),
@@ -683,6 +685,7 @@ class ManualQuestionForm(forms.ModelForm):
             "correct_answer",
             "marks",
             "explanation",
+            "hint",
             "video_solution_url",
         ]
         widgets = {
@@ -719,6 +722,13 @@ class ManualQuestionForm(forms.ModelForm):
                     "class": "form-control",
                     "rows": 3,
                     "placeholder": "Explanation for the answer (optional)",
+                }
+            ),
+            "hint": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": 2,
+                    "placeholder": "Optional hint / clue shown during practice",
                 }
             ),
             "video_solution_url": forms.URLInput(
